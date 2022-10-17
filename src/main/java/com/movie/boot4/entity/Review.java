@@ -18,7 +18,8 @@ public class Review extends BaseEntity{
     private Long reviewnum;
 
     //다대일 관계에서는 항상 기본값이 즉시 로딩이므로, 지연 로딩으로 설정하는 작업 필요
-    @ManyToOne //(fetch = FetchType.LAZY)
+    //-> 지연로딩을 사용하므로, 테스트시에 @Transactional 필요
+    @ManyToOne (fetch = FetchType.LAZY)
     private Movie movie;
 
     @ManyToOne (fetch = FetchType.LAZY)
