@@ -6,7 +6,6 @@ import com.movie.boot4.entity.Review;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -21,25 +20,25 @@ public class ReviewRepositoryTests {
 
         IntStream.rangeClosed(1, 200).forEach(i -> {
 
-            //¿µÈ­ ¹øÈ£¿¡ ÇØ´çÇÏ´Â ¿µÈ­¿¡ ¸®ºä¾î ¹øÈ£¿¡ ÇØ´çÇÏ´Â ¸®ºä¾î°¡ ¸®ºä¸¦ ÀÛ¼ºÇØ¾ßÇÏ¹Ç·Î
-            //¿µÈ­¹øÈ£, ¸®ºä¾î¹øÈ£, ¸®ºä¹øÈ£
-            //-> ¸â¹ö °´Ã¼, ¿µÈ­ °´Ã¼, ¸®ºä °´Ã¼ »ı¼ºÇØ ÀúÀå
+            //ì˜í™” ë²ˆí˜¸ì— í•´ë‹¹í•˜ëŠ” ì˜í™”ì— ë¦¬ë·°ì–´ ë²ˆí˜¸ì— í•´ë‹¹í•˜ëŠ” ë¦¬ë·°ì–´ê°€ ë¦¬ë·°ë¥¼ ì‘ì„±í•´ì•¼í•˜ë¯€ë¡œ
+            //ì˜í™”ë²ˆí˜¸, ë¦¬ë·°ì–´ë²ˆí˜¸, ë¦¬ë·°ë²ˆí˜¸
+            //-> ë©¤ë²„ ê°ì²´, ì˜í™” ê°ì²´, ë¦¬ë·° ê°ì²´ ìƒì„±í•´ ì €ì¥
             Long mno = (long) (Math.random() * 100) + 1;
 
             Long mid = ((long) (Math.random() * 100) + 1);
 
 
-            //¸â¹ö °´Ã¼
+            //ë©¤ë²„ ê°ì²´
             Member member = Member.builder()
                     .mid(mid)
                     .build();
 
-            //¸®ºä °´Ã¼
+            //ë¦¬ë·° ê°ì²´
             Review movieReview = Review.builder()
                     .member(member)
                     .movie(Movie.builder().mno(mno).build())
                     .grade((int) (Math.random() * 5) + 1)
-                    .text("ÀÌ ¿µÈ­¿¡ ´ëÇÑ ´À³¦..." + i)
+                    .text("ì´ ì˜í™”ì— ëŒ€í•œ ëŠë‚Œ..." + i)
                     .build();
 
             reviewRepository.save(movieReview);
@@ -47,28 +46,27 @@ public class ReviewRepositoryTests {
         });
     }
 
-        //Æ¯Á¤ ¿µÈ­ÀÇ ¸ğµç ¸®ºä¿Í È¸¿øÀÇ ´Ğ³×ÀÓ Á¶È¸ Å×½ºÆ®
-        @Transactional
-        @Test
-        public void testGetMovieReviews(){
-            //ÇÊ¿äÇÑ Á¤º¸
-            //(1) ¿µÈ­ °´Ã¼
-            //(2) Ã£Àº ¿µÈ­ÀÇ ¸®ºä Á¤º¸¸¦ ´ãÀº ¸®ºä ¸®½ºÆ®
+    //íŠ¹ì • ì˜í™”ì˜ ëª¨ë“  ë¦¬ë·°ì™€ íšŒì›ì˜ ë‹‰ë„¤ì„ ì¡°íšŒ í…ŒìŠ¤íŠ¸
+    @Test
+    public void testGetMovieReviews(){
+        //í•„ìš”í•œ ì •ë³´
+        //(1) ì˜í™” ê°ì²´
+        //(2) ì°¾ì€ ì˜í™”ì˜ ë¦¬ë·° ì •ë³´ë¥¼ ë‹´ì€ ë¦¬ë·° ë¦¬ìŠ¤íŠ¸
 
-            Movie movie=Movie.builder().mno(92L).build();
+        Movie movie=Movie.builder().mno(92L).build();
 
-            List<Review> result = reviewRepository.findByMovie(movie);
+        List<Review> result = reviewRepository.findByMovie(movie);
 
-            //reuslt¸¦ µ¹¸é¼­ ¸®ºä Á¤º¸ Ãâ·ÂÇÏ´Â forEach¹®
-            result.forEach(movieReview -> {
-                System.out.print(movieReview.getReviewnum());
-                System.out.print("\t"+movieReview.getGrade());
-                System.out.print("\t"+movieReview.getText());
-                System.out.print("\t"+movieReview.getMember());
-                System.out.print("\t"+movieReview.getMember().getEmail());
-                System.out.println("---------------------------");
+        //reusltë¥¼ ëŒë©´ì„œ ë¦¬ë·° ì •ë³´ ì¶œë ¥í•˜ëŠ” forEachë¬¸
+        result.forEach(movieReview -> {
+            System.out.println(movieReview.getReviewnum());
+            System.out.println("\t"+movieReview.getGrade());
+            System.out.println("\t"+movieReview.getText());
+            System.out.println("\t"+movieReview.getMember());
+            System.out.println("\t"+movieReview.getMember().getEmail());
+            System.out.println("---------------------------");
 
-            });
-        }
+        });
+    }
 
 }

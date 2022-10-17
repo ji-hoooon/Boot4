@@ -20,24 +20,24 @@ import java.util.stream.IntStream;
 @SpringBootTest
 public class MovieRepositoryTests {
 
-    //≈◊Ω∫∆Æ∏¶ ¿ß«— ¿«¡∏º∫ ¡÷¿‘
+    //ÌÖåÏä§Ìä∏Î•º ÏúÑÌïú ÏùòÏ°¥ÏÑ± Ï£ºÏûÖ
     @Autowired
     private MovieRepository movieRepository;
     @Autowired
     private MovieImageRepository movieImageRepository;
 
-    //øµ»≠øÕ øµ»≠ ¿ÃπÃ¡ˆ¥¬ ∞∞¿∫ Ω√¡°ø° ª¿‘µ«æÓæﬂ «œπ«∑Œ
-    //(1) Movie ∞¥√º∏¶ ∏’¿˙ save
-    //(2) Movie ∞¥√ºø° «ÿ¥Á«œ¥¬ PK∏¶ ¿ÃøÎ«ÿ øµ»≠ ¿ÃπÃ¡ˆµÈ¿ª √ﬂ∞°
-    //(3) øµ»≠ ¿ÃπÃ¡ˆ¥¬ √÷¥Î 5∞≥±Ó¡ˆ ¿”¿«∑Œ ¿˙¿Â [∆Ø¡§ øµ»≠ ¿ÃπÃ¡ˆ¥¬ ∏π¿ª ºˆ ¿÷¿∏π«∑Œ ¿”¿«¿« ºˆ∑Œ √≥∏Æ]
-    //∆Æ∑£¿Ëº«¿Ã ≥°≥™∏È √≥∏Æ«œµµ∑œ «ÿæﬂ «œ∞Ì, ƒøπ‘¿ª ºˆ«‡«œµµ∑œ ≈◊Ω∫∆Æ ¿€º∫
+    //ÏòÅÌôîÏôÄ ÏòÅÌôî Ïù¥ÎØ∏ÏßÄÎäî Í∞ôÏùÄ ÏãúÏ†êÏóê ÏÇΩÏûÖÎêòÏñ¥Ïïº ÌïòÎØÄÎ°ú
+    //(1) Movie Í∞ùÏ≤¥Î•º Î®ºÏ†Ä save
+    //(2) Movie Í∞ùÏ≤¥Ïóê Ìï¥ÎãπÌïòÎäî PKÎ•º Ïù¥Ïö©Ìï¥ ÏòÅÌôî Ïù¥ÎØ∏ÏßÄÎì§ÏùÑ Ï∂îÍ∞Ä
+    //(3) ÏòÅÌôî Ïù¥ÎØ∏ÏßÄÎäî ÏµúÎåÄ 5Í∞úÍπåÏßÄ ÏûÑÏùòÎ°ú Ï†ÄÏû• [ÌäπÏ†ï ÏòÅÌôî Ïù¥ÎØ∏ÏßÄÎäî ÎßéÏùÑ Ïàò ÏûàÏúºÎØÄÎ°ú ÏûÑÏùòÏùò ÏàòÎ°ú Ï≤òÎ¶¨]
+    //Ìä∏ÎûúÏû≠ÏÖòÏù¥ ÎÅùÎÇòÎ©¥ Ï≤òÎ¶¨ÌïòÎèÑÎ°ù Ìï¥Ïïº ÌïòÍ≥†, Ïª§Î∞ãÏùÑ ÏàòÌñâÌïòÎèÑÎ°ù ÌÖåÏä§Ìä∏ ÏûëÏÑ±
     @Commit
     @Transactional
     @Test
     public void insertMovies(){
-        //Ω∫∆Æ∏≤∞˙ ∫Ù¥ı∆–≈œ¿ª ¿ÃøÎ«— øµ»≠ ∞¥√º ª˝º∫
+        //Ïä§Ìä∏Î¶ºÍ≥º ÎπåÎçîÌå®ÌÑ¥ÏùÑ Ïù¥Ïö©Ìïú ÏòÅÌôî Í∞ùÏ≤¥ ÏÉùÏÑ±
         IntStream.rangeClosed(1,100).forEach(i -> {
-            //100±Ó¡ˆ ∆˜«‘
+            //100ÍπåÏßÄ Ìè¨Ìï®
             Movie movie = Movie.builder()
                     .title("Movie....."+i)
                     .build();
@@ -50,7 +50,7 @@ public class MovieRepositoryTests {
 
             for(int j=0;j<count;j++){
                 MovieImage movieImage=MovieImage.builder()
-                        //UUID ≈¨∑°Ω∫∏¶ ¿ÃøÎ«— ∞Ì¿Ø«— π¯»£∏¶ ∏∏µÈ∞Ì -> toString
+                        //UUID ÌÅ¥ÎûòÏä§Î•º Ïù¥Ïö©Ìïú Í≥†Ïú†Ìïú Î≤àÌò∏Î•º ÎßåÎì§Í≥† -> toString
                         .uuid(UUID.randomUUID().toString())
                         .movie(movie)
                         .imgName("test"+j+".jpg")
