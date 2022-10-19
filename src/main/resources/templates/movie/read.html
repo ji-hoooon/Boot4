@@ -51,7 +51,7 @@
         </style>
 
 
-
+<!-- 섬네일 파일 클릭시 원본 이미지 반환을 위해, 섬네일 이름을 알 수 있도록 data에 file 속성 추가-->
         <div class="uploadResult">
             <ul >
                 <li th:each="movieImage: ${dto.imageDTOList}" th:data-file="${movieImage.getThumbnailURL()}">
@@ -60,8 +60,11 @@
             </ul>
         </div>
 
+<!--(1) <div> class 속성값이 uploadResult 밑에 버튼을 추가
+    (2) 리뷰 숫자 보여주는 부분 아래 쪽에 Review Register 글자를 가지는 버튼 추가
+    (3) 영화 리뷰를 보여주는 공간인 reviewList 클래스로 div 생성-->
 
-
+<!-- 리뷰 등록을 위한 review count, review register 버튼 추가-->
         <button type="button" class="btn btn-primary">
             Review Count <span class="badge badge-light">[[${dto.reviewCnt}]]</span>
         </button>
@@ -69,12 +72,12 @@
         <button type="button" class="btn btn-info addReviewBtn">
             Review Register
         </button>
-
+<!-- 영화 리뷰를 보여주는 공간으로 활용-->
         <div class="list-group reviewList">
 
         </div>
 
-
+<!-- 리뷰 모달창과 이미지 모달창-->
         <div class="reviewModal modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -150,7 +153,8 @@
                     }
                 });
 
-                //$(".reviewModal").modal("show"); 미리 보기용
+                //(4) addReviewBtn 클릭시 reviewModal창 보여주도록
+                $(".reviewModal").modal("show"); //미리 보기용
 
                 var reviewModal = $(".reviewModal");
                 var inputMid = $('input[name="mid"]');
@@ -167,9 +171,11 @@
                     reviewModal.modal('show');
                 });
 
-
+                // (5) Save changes 클릭시 영화 리뷰 등록 처리하도록 이벤트 처리
+                // : 버튼 클래스 속성값으로 reviewSaveBtn 지정
                 $('.reviewSaveBtn').click(function() {
 
+                    //버튼 클릭시 회원의 데이터를 JSON 데이터로 만들어 전송
                     var data = {mno:mno, grade:grade, text:inputText.val(), mid: inputMid.val() };
 
                     console.log(data);
@@ -180,6 +186,7 @@
                         data:JSON.stringify(data),
                         contentType:"application/json; charset=utf-8",
                         dataType:"text",
+                        //전송 성공시 reload를 통해 URL 다시 호출
                         success: function(result){
 
                             console.log("result: " + result);
@@ -188,12 +195,15 @@
 
                         }
                     })
+                    //이후 모달창 숨기기
                     reviewModal.modal('hide');
 
                 });
 
-
-                //페이지가 열리면 바로 리뷰 데이터들을 가져와서 사용한다.
+                //리뷰 리스트 보여주는 함수 작성
+                //(1) 새로고침시 평균 평점과 리뷰 개수는 가져온다.
+                //(2) 실제 리뷰 내용을 가져오지 않는 문제
+                //-> 페이지가 열리면 바로 리뷰 데이터들을 가져와서 사용한다.
                 function getMovieReviews() {
 
                     function formatTime(str){
@@ -224,19 +234,24 @@
                     });
                 }
 
-                getMovieReviews();
+                //페이지 열리면 jQuery의 getJSON()을 이용해 MovieReviewController호출해 reviewList 클래스 속성 지정된 <div> 내용을 채운다.
+                //따라서 영화와 함께 리뷰도 같이 출력
+                getMovieReviews();//
 
+                //특정 리뷰 선택하기
+                //-> 수정 삭제 가능하도록 모달창 띄우기
 
-                //modify reveiw
-
+                //외부에 선언해 나중에 수정이나 삭제 작업에 사용할 수 있도록
                 var reviewnum;
 
                 $(".reviewList").on("click", ".card-body", function() {
 
+                    //상황에 따라 버튼 노출 처리
                     $(".reviewSaveBtn").hide();
                     $(".removeBtn , .modifyBtn").show();
 
 
+                    //리뷰 선택시 해당 리뷰의 정보를 가져온다.
                     var targetReview = $(this);
 
                     reviewnum = targetReview.data("reviewnum");
@@ -247,10 +262,13 @@
                     var grade = targetReview.find('.card-title span').html();
                     $(".starrr a:nth-child("+grade+")").trigger('click');
 
+                    //수정 작업을 할 수 있도록 모달창을 띄운다
                     $('.reviewModal').modal('show');
                 });
 
-
+                //4. 영화 리뷰 수정과 삭제
+                // : Ajax를 통한 PUT방식 / DELETE 방식으로 동작하는데
+                // 처리 후에 현재 페이지를 재호출해 서버로부터 변경된 데이터를 받도록 처리
                 $(".modifyBtn").on("click", function(){
 
                     var data = {reviewnum: reviewnum, mno:mno, grade:grade, text:inputText.val(), mid: inputMid.val() };
@@ -296,6 +314,7 @@
                     reviewModal.modal('hide');
                 });
 
+                //섬네일 클릭시 원본 이미지 출력을 위해, data의 file속성에 추가한 섬네일 파일 이름을 가져와서 원본 이미지 출력
                 $(".uploadResult li").click(function() {
 
                     var file = $(this).data('file');

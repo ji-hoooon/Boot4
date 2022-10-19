@@ -1,17 +1,25 @@
 package com.movie.boot4.service;
 
 import com.movie.boot4.dto.MovieDTO;
+import com.movie.boot4.dto.PageRequestDTO;
+import com.movie.boot4.dto.PageResultDTO;
 import com.movie.boot4.entity.Movie;
 import com.movie.boot4.entity.MovieImage;
 import com.movie.boot4.repository.MovieImageRepository;
 import com.movie.boot4.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 @Log4j2
@@ -42,5 +50,51 @@ public class MovieServiceImpl implements MovieService{
         });
 
         return null;
+    }
+
+    //getList() 구현
+    @Override
+    public PageResultDTO<MovieDTO, Object[]> getList(PageRequestDTO requestDTO){
+        //requestDTO에서 페이징 메서드로 mno기준 정렬 수행해 페이징 객체에 저장
+        Pageable pageable = requestDTO.getPageable(Sort.by("mno")
+                .descending());
+
+        //페이징 객체를 전달해 영화 목록을 받아서 Page에 배열로 저장
+        Page<Object[]> result = movieRepository.getListPage(pageable);
+
+
+        log.info("==============================================");
+        result.getContent().forEach(arr -> {
+            log.info(Arrays.toString(arr));
+        });
+        //배열에 있는 값으로 엔티티를 가져와 DTO 만들기
+        Function<Object[], MovieDTO>fn =(arr ->
+                entitiesToDTO(
+                        (Movie) arr[0],
+                        (List<MovieImage>) (Arrays.asList((MovieImage)arr[1])),
+                        (Double) arr[2],
+                        (Long) arr[3])
+                );
+        return new PageResultDTO<>(result, fn);
+    }
+
+    //리포지토리에서 데이터를 받아서 가공해 MovieDTO를 반환하는 메서드를 구현
+    @Override
+    public MovieDTO getMovie(Long mno){
+        List<Object[]> result = movieRepository.getMovieWithAll(mno);
+
+        //영화 이미지를 제외하고 모든 row가 동일한 값을 가지고 있다.
+
+        Movie movie = (Movie) result.get(0)[0]; //맨 앞에 존재하는 Movie 엔티티
+        List<MovieImage> movieImageList = new ArrayList<>(); //영화 이미지 개수만큼 객체 필요
+        result.forEach(arr ->{
+            MovieImage movieImage=(MovieImage) arr[1];
+            movieImageList.add(movieImage);
+        });
+
+        Double avg= (Double) result.get(0)[2]; //평균 평점
+        Long reviewCnt = (Long) result.get(0)[3]; //리뷰 개수
+
+        return entitiesToDTO(movie,movieImageList,avg,reviewCnt);
     }
 }
